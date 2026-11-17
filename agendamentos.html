@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1769aa">
+  <title>Lista de Agendamentos</title>
+  <link rel="stylesheet" href="agendamentos.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div class="header-title">
+        <div class="header-icon" aria-hidden="true">▦</div>
+        <div>
+          <p class="eyebrow">PAINEL DO CONSULTÓRIO</p>
+          <h1>Lista de Agendamentos</h1>
+          <p class="subtitle">Consulte e gerencie os horários dos pacientes.</p>
+        </div>
+      </div>
+      <a class="back-link" href="index.html">← Voltar para página inicial</a>
+    </header>
+
+    <section class="stats" aria-label="Resumo dos agendamentos">
+      <article class="stat-card">
+        <span class="stat-icon blue">▤</span>
+        <div><span class="stat-label">Total de agendamentos</span><strong id="totalCount">0</strong></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon orange">◷</span>
+        <div><span class="stat-label">Aguardando</span><strong id="waitingCount">0</strong></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon green">✓</span>
+        <div><span class="stat-label">Confirmados</span><strong id="confirmedCount">0</strong></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon purple">▣</span>
+        <div><span class="stat-label">Finalizados</span><strong id="finishedCount">0</strong></div>
+      </article>
+    </section>
+
+    <section class="content-card">
+      <div class="section-heading">
+        <div>
+          <h2>Agendamentos cadastrados</h2>
+          <p>Visualize, pesquise e atualize os dados dos atendimentos.</p>
+        </div>
+        <span class="record-count" id="recordCount">0 registros</span>
+      </div>
+
+      <div class="toolbar">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="Buscar paciente, médico ou telefone..." autocomplete="off">
+        </label>
+        <label class="filter-box">
+          <span>Status</span>
+          <select id="statusFilter">
+            <option value="">Todos os status</option>
+            <option value="Aguardando">Aguardando</option>
+            <option value="Confirmado">Confirmado</option>
+            <option value="Finalizado">Finalizado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="id-col">ID</th>
+              <th>Paciente</th>
+              <th>Médico</th>
+              <th>Especialidade</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Status</th>
+              <th>Telefone</th>
+              <th class="actions-col">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="appointmentList"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" hidden>
+          <span class="empty-icon">⌕</span>
+          <strong>Nenhum agendamento encontrado</strong>
+          <p>Tente mudar a busca ou o filtro selecionado.</p>
+        </div>
+      </div>
+      <p class="table-footnote">As alterações desta demonstração ficam salvas neste navegador.</p>
+    </section>
+
+    <footer class="page-footer">
+      <span class="footer-mark">i</span>
+      <p><strong>Atenção:</strong> confira os dados antes de salvar. Em caso de dúvidas, entre em contato com o administrador do sistema.</p>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="editModal" aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div class="modal-heading-icon">✎</div>
+        <div>
+          <h2 id="modalTitle">Editar agendamento</h2>
+          <p>Atualize as informações do atendimento.</p>
+        </div>
+        <button class="icon-button close-modal" type="button" aria-label="Fechar janela">×</button>
+      </div>
+
+      <form id="editForm">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <label class="field field-wide">
+            <span>Nome do paciente</span>
+            <input id="editPatient" type="text" maxlength="90" required>
+          </label>
+          <label class="field field-wide">
+            <span>Médico responsável</span>
+            <input id="editDoctor" type="text" maxlength="90" required>
+          </label>
+          <label class="field">
+            <span>Especialidade</span>
+            <input id="editSpecialty" type="text" maxlength="70" required>
+          </label>
+          <label class="field">
+            <span>Data</span>
+            <input id="editDate" type="date" required>
+          </label>
+          <label class="field">
+            <span>Horário</span>
+            <input id="editTime" type="time" required>
+          </label>
+          <label class="field">
+            <span>Status</span>
+            <select id="editStatus" required>
+              <option value="Aguardando">Aguardando</option>
+              <option value="Confirmado">Confirmado</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </label>
+          <label class="field field-wide">
+            <span>Telefone</span>
+            <input id="editPhone" type="tel" maxlength="20" required>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="button button-secondary close-modal" type="button">Cancelar</button>
+          <button class="button button-primary" type="submit"><span>✓</span> Salvar alterações</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="agendamentos.js"></script>
+</body>
+</html>
